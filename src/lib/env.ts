@@ -7,6 +7,7 @@ const serverEnvSchema = z.object({
   DEEPSEEK_MODEL: z.string().min(1),
   DEEPSEEK_API_KEY: z.string().min(1),
   STORAGE_ROOT: z.string().min(1),
+  AUTH_SESSION_SECRET: z.string().min(32),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

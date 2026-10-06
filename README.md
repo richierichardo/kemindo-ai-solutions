@@ -17,6 +17,7 @@ Copy-Item .env.example .env.local
 npm install
 npm run db:up
 npm run db:migrate
+npm run db:seed:auth
 npm run dev
 ```
 
@@ -31,7 +32,17 @@ npm run build
 npm run db:health
 ```
 
-Schema migrations are versioned under `src/db/migrations/` and are generated with `npm run db:generate`. The local RAG vector column uses 768 dimensions for the MVP `nomic-embed-text` embedding model.
+Schema migrations are versioned under `src/db/migrations/` and are generated with `npm run db:generate`. Plan 02 retains a 768-dimensional vector column for future roadmap work; vector indexing and RAG are not part of the active CV/interview MVP.
+
+## Demo login
+
+Run `npm run db:seed:auth` only with `APP_ENV=demo` or `APP_ENV=development`. The idempotent seed creates one demo company, site, and three recruitment users. All demo users use the password `demo-password`:
+
+- `hr.demo@kemindo.local` — upload and manage candidates
+- `interviewer.demo@kemindo.local` — complete interview scorecards
+- `hiring.manager.demo@kemindo.local` — make the human hiring decision
+
+These credentials are local-demo-only and must be changed before any non-demo deployment.
 
 Stop the local database with:
 

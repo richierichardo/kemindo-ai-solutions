@@ -1,4 +1,27 @@
-# 15-Commit Implementation Plan
+# MVP Implementation Plan
+
+## Current MVP Scope Override
+
+The active project scope is Recruitment Intelligence only:
+
+```text
+CV upload → CV parsing → candidate matching → interview questions → scorecard → interview summary → human hiring decision
+```
+
+HSE workflows, RAG chatbot/indexing, executive reporting, HSE fixtures, and offline incident reporting are deferred. The existing Plan 01 and Plan 02 commits remain valid foundations; unused HSE/RAG/report tables are retained for future roadmap work and are not part of the MVP acceptance criteria.
+
+The active implementation sequence is:
+
+1. Plan 03 — simplified recruitment auth and demo roles
+2. Plan 04 — recruitment shell and design system
+3. Plan 05 — requisition, vacancy, and job requirements
+4. Plan 06 — candidate intake, CV upload, and local file security
+5. Plan 07 — CV extraction, structured parsing, and deterministic requirements
+6. Plan 08 — candidate matching explanation and human review
+7. Plan 09 — interview scheduling, questions, scorecards, and summary
+8. Plan 10 — demo reset, tests, and delivery hardening
+
+The legacy plan descriptions below are retained as historical planning notes. They are not active requirements when they mention HSE, RAG, knowledge-base indexing, reports, or HSE fixtures.
 
 ## Working Agreement
 
@@ -245,7 +268,7 @@ feat(ai): add cv parsing and explainable candidate matching
 feat(recruitment): add interview scorecards and hiring decisions
 ```
 
-## Plan 12 — HSE Incident and Corrective Action Flow
+## Deferred Roadmap — HSE Incident and Corrective Action Flow
 
 ### Scope
 
@@ -267,7 +290,7 @@ feat(recruitment): add interview scorecards and hiring decisions
 feat(hse): add offline incident and corrective action workflow
 ```
 
-## Plan 13 — Dashboard and Automated Reporting
+## Deferred Roadmap — Dashboard and Automated Reporting
 
 ### Scope
 
@@ -290,7 +313,7 @@ feat(hse): add offline incident and corrective action workflow
 feat(reporting): add recruitment and hse executive reports
 ```
 
-## Plan 14 — Demo Reset, Test Cases, and Quality Gate
+## Deferred Roadmap — Original Demo Reset, Test Cases, and Quality Gate
 
 ### Scope
 
@@ -315,7 +338,7 @@ feat(reporting): add recruitment and hse executive reports
 test(demo): add deterministic reset and end-to-end test suite
 ```
 
-## Plan 15 — Demo Hardening and Delivery Package
+## Deferred Roadmap — Demo Hardening and Delivery Package
 
 ### Scope
 
@@ -338,7 +361,7 @@ test(demo): add deterministic reset and end-to-end test suite
 chore(delivery): harden and package kemindo demo
 ```
 
-## Final Demo Sequence
+## Deferred Original Demo Sequence
 
 1. Run the local stack.
 2. Run `npm run demo:reset`.
