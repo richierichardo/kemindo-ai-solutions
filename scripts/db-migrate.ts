@@ -11,6 +11,11 @@ async function main() {
 }
 
 main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : error);
+  if (error && typeof error === "object") {
+    const databaseError = error as { message?: string; code?: string; detail?: string; hint?: string; cause?: { message?: string; code?: string } };
+    console.error(JSON.stringify({ message: databaseError.message, code: databaseError.code, detail: databaseError.detail, hint: databaseError.hint, cause: databaseError.cause }, null, 2));
+  } else {
+    console.error(error);
+  }
   process.exitCode = 1;
 });

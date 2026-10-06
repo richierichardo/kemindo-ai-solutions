@@ -5,14 +5,14 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: kemindo
-      POSTGRES_USER: kemindo
-      POSTGRES_PASSWORD: kemindo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
     ports:
-      - "5432:5432"
+      - "55432:5432"
     volumes:
       - kemindo-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kemindo -d kemindo"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kemindo"]
       interval: 5s
       timeout: 5s
       retries: 10

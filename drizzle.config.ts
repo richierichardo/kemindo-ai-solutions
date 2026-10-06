@@ -9,7 +9,7 @@ export default defineConfig({
   out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "postgresql://kemindo:kemindo@localhost:5432/kemindo",
+    url: process.env.DATABASE_URL ?? "postgresql://postgres:admin@127.0.0.1:55432/kemindo",
   },
   strict: true,
   verbose: true,

@@ -22,6 +22,7 @@ async function clearDemoFiles(storageRoot: string) {
     const target = path.resolve(storageRoot, directory);
     await rm(target, { recursive: true, force: true });
     await mkdir(target, { recursive: true });
+    await writeFile(path.join(target, ".gitkeep"), "\n");
   }
 }
 
