@@ -121,7 +121,8 @@ export const applications = pgTable("applications", {
   id: uuid("id").defaultRandom().primaryKey(), vacancyId: uuid("vacancy_id").notNull().references(() => vacancies.id),
   candidateId: uuid("candidate_id").notNull().references(() => candidates.id), stage: applicationStage("stage").default("applied").notNull(),
   fitScore: numeric("fit_score", { precision: 5, scale: 2 }), fitExplanation: jsonb("fit_explanation"),
-  humanDecision: humanDecision("human_decision").default("pending").notNull(), ...timestamps,
+  humanDecision: humanDecision("human_decision").default("pending").notNull(), reviewedBy: uuid("reviewed_by").references(() => users.id),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }), reviewNote: text("review_note"), ...timestamps,
 }, (t) => [uniqueIndex("applications_vacancy_candidate_uq").on(t.vacancyId, t.candidateId)]);
 
 export const interviews = pgTable("interviews", {

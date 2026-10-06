@@ -15,4 +15,8 @@ export const candidateIntakeSchema = z.object({
   location: z.string().trim().max(255).optional().or(z.literal("")),
 });
 
+export const matchingRequestSchema = z.object({ force: z.boolean().optional().default(false) });
+export const matchingChatSchema = z.object({ feature: z.literal("candidate_match"), applicationId: z.string().uuid(), force: z.boolean().optional().default(false) });
+export const reviewNoteSchema = z.object({ note: z.string().trim().min(2).max(2000) });
+
 export type RequisitionInput = z.infer<typeof requisitionInputSchema>;
