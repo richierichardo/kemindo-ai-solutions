@@ -16,3 +16,15 @@ export function canCompleteInterview(userRoles: string[]): boolean {
 export function canDecideHiring(userRoles: string[]): boolean {
   return hasRole(userRoles, "hiring_manager");
 }
+
+export function canManageRequisitions(userRoles: string[]): boolean {
+  return hasRole(userRoles, "company_hr");
+}
+
+export function canApproveRequisitions(userRoles: string[]): boolean {
+  return hasRole(userRoles, "hiring_manager");
+}
+
+export function canCloseVacancy(userRoles: string[]): boolean {
+  return canManageRequisitions(userRoles) || canApproveRequisitions(userRoles);
+}

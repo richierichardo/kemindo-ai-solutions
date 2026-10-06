@@ -8,6 +8,13 @@
       "when": 1791259704495,
       "tag": "0000_absent_phantom_reporter",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791268812655,
+      "tag": "0001_lush_sentry",
+      "breakpoints": true
     }
   ]
 }

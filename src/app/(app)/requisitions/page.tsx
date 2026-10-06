@@ -1,5 +1,5 @@
-import { PlaceholderPage } from "@/components/placeholder-page";
+import { RequisitionClient } from "./requisition-client";
 
 export default function RequisitionsPage() {
-  return <PlaceholderPage eyebrow="Recruitment workflow" title="Requisitions" description="Define the role requirements that candidate CVs will be evaluated against." />;
+  return <main className="page-content"><div className="page-heading"><div className="eyebrow">Recruitment workflow</div><h1>Requisitions</h1><p>Define role requirements, request human approval, and publish a vacancy when the role is approved.</p></div><RequisitionClient /></main>;
 }

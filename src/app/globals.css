@@ -61,6 +61,24 @@ p { color: var(--black-muted); line-height: 1.6; }
 .data-table { width: 100%; border-collapse: collapse; text-align: left; }
 .data-table th, .data-table td { border-bottom: 1px solid var(--black-soft); padding: 12px 14px; }
 .data-table th { background: var(--black); color: var(--white); font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.requisition-workspace { max-width: 1180px; }
+.workspace-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; border-top: 2px solid var(--black); padding-top: 16px; }
+.toolbar-note { display: block; margin-top: 5px; color: var(--black-muted); font-size: 0.78rem; }
+.requisition-grid { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.requisition-form, .requisition-card { border: 1px solid var(--black); padding: 24px; }
+.section-kicker { color: var(--red); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.form-two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.checkbox-field { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 0.82rem; font-weight: 800; }
+.checkbox-field input { width: 18px; height: 18px; accent-color: var(--red); }
+.form-actions, .card-actions, .vacancy-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.requisition-list { display: grid; gap: 14px; }
+.requisition-card { display: grid; gap: 18px; }
+.card-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+.card-heading h2 { margin-top: 6px; }
+.workflow-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-block: 1px solid var(--black-soft); padding: 12px 0; color: var(--black-muted); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; }
+.workflow-current { color: var(--red); }
+.rejection-note { margin: 0; border-left: 3px solid var(--bright-red); padding-left: 10px; font-size: 0.82rem; }
+.reject-form { border-top: 1px solid var(--black-soft); padding-top: 16px; }
 .form-field { display: grid; gap: 8px; margin-bottom: 18px; font-size: 0.82rem; font-weight: 800; }
 .input { width: 100%; min-height: 44px; border: 1px solid var(--black); background: var(--white); padding: 10px 12px; color: var(--black); }
 .input:focus { border-color: var(--red); outline: 3px solid rgba(188, 2, 2, 0.2); }
@@ -81,6 +99,7 @@ code { color: var(--dark-red); font-family: Consolas, monospace; font-weight: 70
   .menu-toggle { display: inline-block; }
   .topbar { padding: 14px 20px; }
   .page-content { padding: 40px 20px 64px; }
+  .requisition-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 520px) {
@@ -88,4 +107,5 @@ code { color: var(--dark-red); font-family: Consolas, monospace; font-weight: 70
   .topbar .button { padding: 8px 10px; font-size: 0.75rem; }
   .topbar-kicker { display: none; }
   .login-card { padding: 28px 24px; }
+  .form-two-column { grid-template-columns: 1fr; gap: 0; }
 }

@@ -19,6 +19,7 @@ export const businessArea = pgEnum("business_area", ["chemical", "logistics", "e
 export const siteType = pgEnum("site_type", ["office", "warehouse", "factory", "mine", "port", "other"]);
 export const employmentType = pgEnum("employment_type", ["permanent", "contract", "temporary", "internship"]);
 export const requisitionStatus = pgEnum("requisition_status", ["draft", "pending_approval", "approved", "rejected", "closed"]);
+export const vacancyStatus = pgEnum("vacancy_status", ["draft", "published", "closed"]);
 export const documentType = pgEnum("document_type", ["cv", "certificate", "identity", "portfolio", "other"]);
 export const consentStatus = pgEnum("consent_status", ["pending", "granted", "withdrawn"]);
 export const applicationStage = pgEnum("application_stage", ["applied", "screening", "shortlisted", "interview", "decision", "offer", "onboarding", "rejected", "withdrawn"]);
@@ -88,6 +89,8 @@ export const jobRequisitions = pgTable("job_requisitions", {
   employmentType: employmentType("employment_type").notNull(), shiftRequired: boolean("shift_required").default(false).notNull(),
   status: requisitionStatus("status").default("draft").notNull(), requiredSkills: jsonb("required_skills").$type<string[]>().default([]).notNull(),
   requiredCertifications: jsonb("required_certifications").$type<string[]>().default([]).notNull(), approvedBy: uuid("approved_by").references(() => users.id),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }), approvedAt: timestamp("approved_at", { withTimezone: true }),
+  rejectedBy: uuid("rejected_by").references(() => users.id), rejectedAt: timestamp("rejected_at", { withTimezone: true }), rejectionReason: text("rejection_reason"),
   createdBy: uuid("created_by").notNull().references(() => users.id), updatedBy: uuid("updated_by").notNull().references(() => users.id), ...timestamps,
 }, (t) => [index("requisitions_company_status_idx").on(t.companyId, t.status)]);
 
@@ -95,7 +98,8 @@ export const vacancies = pgTable("vacancies", {
   id: uuid("id").defaultRandom().primaryKey(), requisitionId: uuid("requisition_id").notNull().references(() => jobRequisitions.id),
   title: varchar("title", { length: 255 }).notNull(), description: text("description").notNull(),
   publishedAt: timestamp("published_at", { withTimezone: true }), closedAt: timestamp("closed_at", { withTimezone: true }),
-  status: requisitionStatus("status").default("draft").notNull(), ...timestamps,
+  status: vacancyStatus("status").default("draft").notNull(), createdBy: uuid("created_by").notNull().references(() => users.id),
+  publishedBy: uuid("published_by").references(() => users.id), updatedBy: uuid("updated_by").notNull().references(() => users.id), ...timestamps,
 });
 
 export const candidates = pgTable("candidates", {
