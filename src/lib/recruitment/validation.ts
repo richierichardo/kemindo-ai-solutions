@@ -8,4 +8,11 @@ export const requisitionInputSchema = z.object({
 
 export const rejectionSchema = z.object({ reason: z.string().trim().min(2).max(2000) });
 
+export const candidateIntakeSchema = z.object({
+  fullName: z.string().trim().min(2).max(255),
+  email: z.string().trim().email().max(320),
+  phone: z.string().trim().max(64).optional().or(z.literal("")),
+  location: z.string().trim().max(255).optional().or(z.literal("")),
+});
+
 export type RequisitionInput = z.infer<typeof requisitionInputSchema>;

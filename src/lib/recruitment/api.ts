@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { auditLogs, companies, divisions, jobFamilies, jobRequisitions, sites, vacancies } from "@/db/schema";
 import { requireRecruitmentAccess, requireRole, type AuthUser } from "@/lib/auth/user";
 import { WorkflowConflictError } from "@/lib/recruitment/workflow";
+import { FileSecurityError } from "@/lib/files/secure-storage";
 
 export class ApiError extends Error {
   constructor(public status: number, public code: string, message: string, public fieldErrors?: Record<string, string[]>) { super(message); }
@@ -25,6 +26,7 @@ export async function roleUser(...roles: ("company_hr" | "interviewer" | "hiring
 export function apiError(error: unknown) {
   if (error instanceof ApiError) return Response.json({ error: { code: error.code, message: error.message, ...(error.fieldErrors ? { fieldErrors: error.fieldErrors } : {}) } }, { status: error.status });
   if (error instanceof WorkflowConflictError) return Response.json({ error: { code: error.code, message: error.message } }, { status: 409 });
+  if (error instanceof FileSecurityError) return Response.json({ error: { code: error.code, message: error.message } }, { status: error.status });
   return Response.json({ error: { code: "INTERNAL_ERROR", message: "Unexpected recruitment workflow error." } }, { status: 500 });
 }
 

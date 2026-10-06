@@ -66,3 +66,5 @@ Private files are kept under `storage/`, outside `public/`:
 - `storage/reports/` — generated reports
 
 The directories are intentionally ignored by Git except for their `.gitkeep` markers.
+
+Candidate intake is vacancy-first and currently accepts PDF CVs up to 10 MB. Files are stored with generated private paths under `storage/uploads/candidates/`; the original filename is metadata only. CV parsing and matching are intentionally deferred to later plans.

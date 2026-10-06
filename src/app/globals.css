@@ -80,6 +80,16 @@ p { color: var(--black-muted); line-height: 1.6; }
 .rejection-note { margin: 0; border-left: 3px solid var(--bright-red); padding-left: 10px; font-size: 0.82rem; }
 .reject-form { border-top: 1px solid var(--black-soft); padding-top: 16px; }
 .form-field { display: grid; gap: 8px; margin-bottom: 18px; font-size: 0.82rem; font-weight: 800; }
+.candidate-workspace { display: grid; max-width: 1180px; gap: 24px; }
+.candidate-intake-form, .candidate-card { border: 1px solid var(--black); padding: 24px; }
+.candidate-intake-form { max-width: 520px; }
+.candidate-list { display: grid; gap: 14px; }
+.candidate-card { display: grid; gap: 16px; }
+.candidate-card p { margin: 6px 0 0; font-size: 0.86rem; }
+.candidate-meta { display: flex; flex-wrap: wrap; gap: 18px; border-block: 1px solid var(--black-soft); padding: 12px 0; color: var(--black-muted); font-size: 0.82rem; }
+.candidate-meta strong { color: var(--black); }
+.form-hint { color: var(--black-muted); font-weight: 400; }
+.success-panel { border: 1px solid var(--red); padding: 16px; color: var(--dark-red); font-weight: 800; }
 .input { width: 100%; min-height: 44px; border: 1px solid var(--black); background: var(--white); padding: 10px 12px; color: var(--black); }
 .input:focus { border-color: var(--red); outline: 3px solid rgba(188, 2, 2, 0.2); }
 .field-error, .form-error { color: var(--bright-red); font-weight: 700; }
