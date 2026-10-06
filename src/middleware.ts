@@ -9,4 +9,6 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/api/recruitment/:path*", "/recruitment/:path*"] };
+export const config = {
+  matcher: ["/api/recruitment/:path*", "/requisitions/:path*", "/candidates/:path*", "/interviews/:path*", "/account/:path*"],
+};

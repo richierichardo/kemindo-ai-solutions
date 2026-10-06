@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Kemindo Operations Platform",
-  description: "Local-first recruitment and HSE operations platform.",
+  title: "Kemindo Recruitment Intelligence",
+  description: "Local-first CV parsing and interview assistant platform.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
