@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const env = getServerEnv();
     const database = await checkDatabase();
-    const healthy = database.connected && database.vectorExtension;
+    const healthy = database.connected && database.vectorExtension && database.pgcryptoExtension && database.migrationTable;
 
     return NextResponse.json(
       {

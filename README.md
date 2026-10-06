@@ -16,6 +16,7 @@ Plan 01 provides the runtime, environment validation, local PostgreSQL with pgve
 Copy-Item .env.example .env.local
 npm install
 npm run db:up
+npm run db:migrate
 npm run dev
 ```
 
@@ -29,6 +30,8 @@ npm run lint
 npm run build
 npm run db:health
 ```
+
+Schema migrations are versioned under `src/db/migrations/` and are generated with `npm run db:generate`. The local RAG vector column uses 768 dimensions for the MVP `nomic-embed-text` embedding model.
 
 Stop the local database with:
 
