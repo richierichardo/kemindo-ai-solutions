@@ -21,6 +21,7 @@ export const employmentType = pgEnum("employment_type", ["permanent", "contract"
 export const requisitionStatus = pgEnum("requisition_status", ["draft", "pending_approval", "approved", "rejected", "closed"]);
 export const vacancyStatus = pgEnum("vacancy_status", ["draft", "published", "closed"]);
 export const documentType = pgEnum("document_type", ["cv", "certificate", "identity", "portfolio", "other"]);
+export const cvParseStatus = pgEnum("cv_parse_status", ["pending", "processing", "completed", "failed"]);
 export const consentStatus = pgEnum("consent_status", ["pending", "granted", "withdrawn"]);
 export const applicationStage = pgEnum("application_stage", ["applied", "screening", "shortlisted", "interview", "decision", "offer", "onboarding", "rejected", "withdrawn"]);
 export const humanDecision = pgEnum("human_decision", ["pending", "approved", "rejected", "on_hold"]);
@@ -112,7 +113,8 @@ export const candidateDocuments = pgTable("candidate_documents", {
   id: uuid("id").defaultRandom().primaryKey(), candidateId: uuid("candidate_id").notNull().references(() => candidates.id, { onDelete: "cascade" }),
   documentType: documentType("document_type").notNull(), originalFilename: varchar("original_filename", { length: 255 }).notNull(),
   localPath: text("local_path").notNull(), mimeType: varchar("mime_type", { length: 128 }).notNull(), sha256: varchar("sha256", { length: 64 }).notNull(),
-  parsedText: text("parsed_text"), parsedData: jsonb("parsed_data"), ...timestamps,
+  parsedText: text("parsed_text"), parsedData: jsonb("parsed_data"), parseStatus: cvParseStatus("parse_status").default("pending").notNull(),
+  parsedAt: timestamp("parsed_at", { withTimezone: true }), parseError: text("parse_error"), ...timestamps,
 }, (t) => [uniqueIndex("candidate_documents_sha256_uq").on(t.sha256)]);
 
 export const applications = pgTable("applications", {

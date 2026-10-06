@@ -2,6 +2,8 @@ import { eq } from "drizzle-orm";
 import { applications, candidateDocuments, candidates, jobRequisitions, vacancies } from "@/db/schema";
 import { getDb } from "@/lib/db";
 import type { AuthUser } from "@/lib/auth/user";
+import type { ParsedCvData } from "./cv-parser";
+import { checkHardRequirements, type HardRequirementCheck } from "./requirements";
 
 type CandidateReadModel = {
   id: string;
@@ -13,15 +15,15 @@ type CandidateReadModel = {
   source: string;
   createdAt: Date;
   updatedAt: Date;
-  documents: Array<{ id: string; documentType: string; originalFilename: string; mimeType: string; sha256: string; createdAt: Date }>;
-  applications: Array<{ id: string; stage: string; humanDecision: string; vacancyId: string; vacancyTitle: string; companyId: string; siteId: string | null; createdAt: Date }>;
+  documents: Array<{ id: string; documentType: string; originalFilename: string; mimeType: string; sha256: string; parseStatus: string; parsedAt: Date | null; parseError: string | null; parsedData: ParsedCvData | null; createdAt: Date }>;
+  applications: Array<{ id: string; stage: string; humanDecision: string; vacancyId: string; vacancyTitle: string; companyId: string; siteId: string | null; createdAt: Date; hardRequirements: HardRequirementCheck | null }>;
 };
 
 export async function getCandidateReadModels(user: AuthUser, candidateId?: string): Promise<CandidateReadModel[]> {
   const db = getDb();
   const [candidateRows, documentRows, applicationRows, vacancyRows, requisitionRows] = await Promise.all([
     db.select().from(candidates),
-    db.select({ id: candidateDocuments.id, candidateId: candidateDocuments.candidateId, documentType: candidateDocuments.documentType, originalFilename: candidateDocuments.originalFilename, mimeType: candidateDocuments.mimeType, sha256: candidateDocuments.sha256, createdAt: candidateDocuments.createdAt }).from(candidateDocuments),
+    db.select({ id: candidateDocuments.id, candidateId: candidateDocuments.candidateId, documentType: candidateDocuments.documentType, originalFilename: candidateDocuments.originalFilename, mimeType: candidateDocuments.mimeType, sha256: candidateDocuments.sha256, parseStatus: candidateDocuments.parseStatus, parsedAt: candidateDocuments.parsedAt, parseError: candidateDocuments.parseError, parsedData: candidateDocuments.parsedData, createdAt: candidateDocuments.createdAt }).from(candidateDocuments),
     db.select().from(applications),
     db.select().from(vacancies),
     db.select().from(jobRequisitions),
@@ -37,12 +39,18 @@ export async function getCandidateReadModels(user: AuthUser, candidateId?: strin
   return candidateRows.filter((candidate) => visibleCandidateIds.has(candidate.id) && (!candidateId || candidate.id === candidateId)).map((candidate) => ({
     id: candidate.id, fullName: candidate.fullName, email: candidate.email, phone: candidate.phone, location: candidate.location,
     consentStatus: candidate.consentStatus, source: candidate.source, createdAt: candidate.createdAt, updatedAt: candidate.updatedAt,
-    documents: documentRows.filter((document) => document.candidateId === candidate.id),
+    documents: documentRows.filter((document) => document.candidateId === candidate.id).map((document) => ({ id: document.id, documentType: document.documentType, originalFilename: document.originalFilename, mimeType: document.mimeType, sha256: document.sha256, parseStatus: document.parseStatus, parsedAt: document.parsedAt, parseError: document.parseError, parsedData: (document.parsedData as ParsedCvData | null) ?? null, createdAt: document.createdAt })),
     applications: visibleApplications.filter((row) => row.application.candidateId === candidate.id).map(({ application, vacancy, requisition }) => ({
       id: application.id, stage: application.stage, humanDecision: application.humanDecision, vacancyId: vacancy.id, vacancyTitle: vacancy.title,
       companyId: requisition.companyId, siteId: requisition.siteId, createdAt: application.createdAt,
+      hardRequirements: applicationCandidateCheck(application.candidateId, vacancy.requisitionId, documentRows, requisition),
     })),
   }));
+}
+
+function applicationCandidateCheck(candidateId: string, _requisitionId: string, documentRows: Array<{ candidateId: string; parsedData: unknown }>, requisition: { requiredSkills: string[]; requiredCertifications: string[] }) {
+  const parsed = documentRows.find((document) => document.candidateId === candidateId && document.parsedData)?.parsedData;
+  return parsed ? checkHardRequirements(requisition.requiredSkills, requisition.requiredCertifications, parsed as ParsedCvData) : null;
 }
 
 export async function getPublishedVacancies(user: AuthUser) {

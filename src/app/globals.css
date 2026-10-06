@@ -90,6 +90,13 @@ p { color: var(--black-muted); line-height: 1.6; }
 .candidate-meta strong { color: var(--black); }
 .form-hint { color: var(--black-muted); font-weight: 400; }
 .success-panel { border: 1px solid var(--red); padding: 16px; color: var(--dark-red); font-weight: 800; }
+.candidate-detail-workspace { display: grid; max-width: 920px; gap: 24px; }
+.document-panel, .requirement-panel { display: grid; gap: 12px; border-top: 1px solid var(--black-soft); padding-top: 16px; }
+.document-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.parsed-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; border-top: 1px solid var(--black-soft); padding-top: 16px; }
+.parsed-grid > div { display: grid; gap: 7px; }
+.requirement-panel { margin-top: 14px; }
+.requirement-panel > span { color: var(--black-muted); font-size: 0.85rem; }
 .input { width: 100%; min-height: 44px; border: 1px solid var(--black); background: var(--white); padding: 10px 12px; color: var(--black); }
 .input:focus { border-color: var(--red); outline: 3px solid rgba(188, 2, 2, 0.2); }
 .field-error, .form-error { color: var(--bright-red); font-weight: 700; }
