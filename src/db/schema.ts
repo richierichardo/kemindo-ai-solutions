@@ -2,6 +2,7 @@ import {
   boolean, date, index, integer, jsonb, numeric, pgEnum, pgTable,
   primaryKey, text, timestamp, uniqueIndex, uuid, varchar, customType,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -31,7 +32,7 @@ export const incidentSeverity = pgEnum("incident_severity", ["low", "medium", "h
 export const incidentStatus = pgEnum("incident_status", ["draft", "submitted", "under_review", "action_open", "closed"]);
 export const correctiveActionStatus = pgEnum("corrective_action_status", ["open", "in_progress", "completed", "overdue", "cancelled"]);
 export const knowledgeDocumentStatus = pgEnum("knowledge_document_status", ["pending", "indexing", "indexed", "failed", "archived"]);
-export const aiFeature = pgEnum("ai_feature", ["rag_chat", "cv_parse", "candidate_match", "interview_summary", "incident_summary", "report_summary"]);
+export const aiFeature = pgEnum("ai_feature", ["rag_chat", "cv_parse", "candidate_match", "interview_questions", "interview_summary", "incident_summary", "report_summary"]);
 export const aiRunStatus = pgEnum("ai_run_status", ["requested", "running", "completed", "failed"]);
 export const jobStatus = pgEnum("job_status", ["queued", "running", "completed", "failed", "cancelled"]);
 export const reportStatus = pgEnum("report_status", ["requested", "generating", "completed", "failed"]);
@@ -128,13 +129,15 @@ export const applications = pgTable("applications", {
 export const interviews = pgTable("interviews", {
   id: uuid("id").defaultRandom().primaryKey(), applicationId: uuid("application_id").notNull().references(() => applications.id),
   interviewerId: uuid("interviewer_id").notNull().references(() => users.id), scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
-  status: interviewStatus("status").default("scheduled").notNull(), notes: text("notes"), aiSummary: text("ai_summary"), ...timestamps,
-});
+  status: interviewStatus("status").default("scheduled").notNull(), notes: text("notes"), aiSummary: text("ai_summary"),
+  questions: jsonb("questions").$type<unknown>(), questionsGeneratedAt: timestamp("questions_generated_at", { withTimezone: true }), questionsError: text("questions_error"),
+  summaryGeneratedAt: timestamp("summary_generated_at", { withTimezone: true }), summaryError: text("summary_error"), ...timestamps,
+}, (t) => [uniqueIndex("interviews_active_application_uq").on(t.applicationId).where(sql`status IN ('scheduled', 'in_progress')`)]);
 
 export const interviewScores = pgTable("interview_scores", {
   id: uuid("id").defaultRandom().primaryKey(), interviewId: uuid("interview_id").notNull().references(() => interviews.id, { onDelete: "cascade" }),
   competency: varchar("competency", { length: 128 }).notNull(), score: integer("score").notNull(), evidence: text("evidence").notNull(), comment: text("comment"), ...timestamps,
-}, (t) => [index("interview_scores_interview_idx").on(t.interviewId)]);
+}, (t) => [index("interview_scores_interview_idx").on(t.interviewId), uniqueIndex("interview_scores_interview_competency_uq").on(t.interviewId, t.competency)]);
 
 export const offers = pgTable("offers", {
   id: uuid("id").defaultRandom().primaryKey(), applicationId: uuid("application_id").notNull().references(() => applications.id),
