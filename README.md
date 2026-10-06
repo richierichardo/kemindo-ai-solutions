@@ -1,6 +1,6 @@
 # Kemindo Operations Platform
 
-Local-first Next.js foundation for Recruitment Intelligence and Factory HSE workflows.
+Local-first Next.js MVP for Kemindo Recruitment Intelligence: requisitions, secure CV intake, local CV parsing, explainable matching, interview assistance, scorecards, and human hiring decisions. HSE, RAG, knowledge base, and reporting remain roadmap foundations.
 
 Plan 01 provides the runtime, environment validation, local PostgreSQL with pgvector, server-side database health checks, and controlled filesystem storage. Domain schema and application features are added by later implementation plans.
 
@@ -18,6 +18,7 @@ npm install
 npm run db:up
 npm run db:migrate
 npm run db:seed:auth
+npm run demo:reset
 npm run dev
 ```
 
@@ -67,4 +68,26 @@ Private files are kept under `storage/`, outside `public/`:
 
 The directories are intentionally ignored by Git except for their `.gitkeep` markers.
 
-Candidate intake is vacancy-first and currently accepts PDF CVs up to 10 MB. Files are stored with generated private paths under `storage/uploads/candidates/`; the original filename is metadata only. CV parsing and matching are intentionally deferred to later plans.
+Candidate intake is vacancy-first and accepts PDF CVs up to 10 MB. Files are stored with generated private paths under `storage/uploads/candidates/`; the original filename is metadata only. CV parsing, deterministic requirement checks, explainable matching, and interview assistance are included in the active MVP.
+
+## Recruitment MVP demo
+
+For a complete deterministic demo, use a local environment and run:
+
+```powershell
+Copy-Item .env.example .env.local
+# Keep APP_ENV=demo in .env.local
+npm run db:up
+npm run db:migrate
+npm run demo:reset
+npm run db:health
+npm run dev
+```
+
+`npm run demo:reset` refuses to run unless `APP_ENV=demo`. It recreates one demo tenant, five recruitment CV PDF fixtures, parsed CV data, hard-requirement examples, deterministic matching output, a completed interview scorecard, and a pending human hiring decision. It is safe to run repeatedly for the demo tenant and does not call DeepSeek.
+
+Demo flow: log in as HR, review the published vacancy and candidates, open a private CV, inspect parsing and matching, then open Interviews. Use the interviewer credential to review the scorecard and the hiring manager credential to review the summary and record the final human decision.
+
+The active MVP does not include HSE incident workflows, RAG chat, knowledge-base indexing, vector ingestion, reporting, offers, or onboarding. Legacy tables remain in the shared schema for roadmap compatibility.
+
+If the database is unavailable, run `npm run db:up` and wait for PostgreSQL health before migrating. If migrations fail, confirm `DATABASE_URL` and rerun only after checking the database logs. `DEEPSEEK_API_KEY` is read only by server modules; automated tests and the demo reset never call the live provider.
