@@ -73,7 +73,7 @@ p { color: var(--black-muted); line-height: 1.6; }
 .form-actions, .card-actions, .vacancy-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .requisition-list { display: grid; gap: 14px; }
 .requisition-card { display: grid; gap: 18px; }
-.card-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+.card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .card-heading h2 { margin-top: 6px; }
 .workflow-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-block: 1px solid var(--black-soft); padding: 12px 0; color: var(--black-muted); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; }
 .workflow-current { color: var(--red); }
@@ -91,6 +91,29 @@ p { color: var(--black-muted); line-height: 1.6; }
 .form-hint { color: var(--black-muted); font-weight: 400; }
 .success-panel { border: 1px solid var(--red); padding: 16px; color: var(--dark-red); font-weight: 800; }
 .candidate-detail-workspace { display: grid; max-width: 920px; gap: 24px; }
+.overview-page { max-width: 1280px; }
+.overview-callout, .overview-section, .overview-note { border: 1px solid var(--black); padding: 24px; }
+.overview-callout { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 24px; border-top: 5px solid var(--red); }
+.overview-callout h2, .overview-section h2 { margin-top: 8px; }
+.overview-callout p { max-width: 760px; margin-bottom: 0; }
+.solution-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.solution-card { display: grid; gap: 12px; border: 1px solid var(--black); padding: 22px; }
+.solution-card h2 { margin: 0; font-size: 1.15rem; }
+.solution-card p { margin: 0; }
+.solution-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.solution-label, .solution-audience strong, .solution-flow strong { color: var(--dark-red); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.solution-label-live { color: var(--red); }
+.solution-flow { display: grid; gap: 5px; border-block: 1px solid var(--black-soft); padding: 12px 0; font-size: 0.86rem; }
+.solution-audience { display: grid; gap: 5px; border-top: 1px solid var(--black-soft); padding-top: 12px; font-size: 0.82rem; }
+.solution-audience span { color: var(--black-muted); }
+.overview-section { margin-bottom: 24px; }
+.rollout-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.rollout-grid > div { border-left: 3px solid var(--dark-red); padding-left: 12px; }
+.rollout-grid p { margin-bottom: 0; font-size: 0.86rem; }
+.business-model p { max-width: 850px; }
+.model-points { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.model-points span { border: 1px solid var(--dark-red); padding: 8px 10px; color: var(--dark-red); font-size: 0.78rem; font-weight: 800; }
+.overview-note { border-color: var(--dark-red); color: var(--dark-red); font-size: 0.86rem; }
 .document-panel, .requirement-panel { display: grid; gap: 12px; border-top: 1px solid var(--black-soft); padding-top: 16px; }
 .document-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .parsed-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; border-top: 1px solid var(--black-soft); padding-top: 16px; }
@@ -117,6 +140,8 @@ code { color: var(--dark-red); font-family: Consolas, monospace; font-weight: 70
   .topbar { padding: 14px 20px; }
   .page-content { padding: 40px 20px 64px; }
   .requisition-grid { grid-template-columns: 1fr; }
+  .solution-grid, .rollout-grid { grid-template-columns: 1fr; }
+  .overview-callout { flex-direction: column; }
 }
 
 @media (max-width: 520px) {
