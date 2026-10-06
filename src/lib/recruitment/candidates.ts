@@ -15,7 +15,7 @@ type CandidateReadModel = {
   source: string;
   createdAt: Date;
   updatedAt: Date;
-  documents: Array<{ id: string; documentType: string; originalFilename: string; mimeType: string; sha256: string; parseStatus: string; parsedAt: Date | null; parseError: string | null; parsedData: ParsedCvData | null; createdAt: Date }>;
+  documents: Array<{ id: string; documentType: string; originalFilename: string; localPath: string; mimeType: string; sha256: string; parseStatus: string; parsedAt: Date | null; parseError: string | null; parsedData: ParsedCvData | null; createdAt: Date }>;
   applications: Array<{ id: string; stage: string; humanDecision: string; vacancyId: string; vacancyTitle: string; companyId: string; siteId: string | null; createdAt: Date; hardRequirements: HardRequirementCheck | null }>;
 };
 
@@ -23,7 +23,7 @@ export async function getCandidateReadModels(user: AuthUser, candidateId?: strin
   const db = getDb();
   const [candidateRows, documentRows, applicationRows, vacancyRows, requisitionRows] = await Promise.all([
     db.select().from(candidates),
-    db.select({ id: candidateDocuments.id, candidateId: candidateDocuments.candidateId, documentType: candidateDocuments.documentType, originalFilename: candidateDocuments.originalFilename, mimeType: candidateDocuments.mimeType, sha256: candidateDocuments.sha256, parseStatus: candidateDocuments.parseStatus, parsedAt: candidateDocuments.parsedAt, parseError: candidateDocuments.parseError, parsedData: candidateDocuments.parsedData, createdAt: candidateDocuments.createdAt }).from(candidateDocuments),
+    db.select({ id: candidateDocuments.id, candidateId: candidateDocuments.candidateId, documentType: candidateDocuments.documentType, originalFilename: candidateDocuments.originalFilename, localPath: candidateDocuments.localPath, mimeType: candidateDocuments.mimeType, sha256: candidateDocuments.sha256, parseStatus: candidateDocuments.parseStatus, parsedAt: candidateDocuments.parsedAt, parseError: candidateDocuments.parseError, parsedData: candidateDocuments.parsedData, createdAt: candidateDocuments.createdAt }).from(candidateDocuments),
     db.select().from(applications),
     db.select().from(vacancies),
     db.select().from(jobRequisitions),
@@ -39,7 +39,7 @@ export async function getCandidateReadModels(user: AuthUser, candidateId?: strin
   return candidateRows.filter((candidate) => visibleCandidateIds.has(candidate.id) && (!candidateId || candidate.id === candidateId)).map((candidate) => ({
     id: candidate.id, fullName: candidate.fullName, email: candidate.email, phone: candidate.phone, location: candidate.location,
     consentStatus: candidate.consentStatus, source: candidate.source, createdAt: candidate.createdAt, updatedAt: candidate.updatedAt,
-    documents: documentRows.filter((document) => document.candidateId === candidate.id).map((document) => ({ id: document.id, documentType: document.documentType, originalFilename: document.originalFilename, mimeType: document.mimeType, sha256: document.sha256, parseStatus: document.parseStatus, parsedAt: document.parsedAt, parseError: document.parseError, parsedData: (document.parsedData as ParsedCvData | null) ?? null, createdAt: document.createdAt })),
+    documents: documentRows.filter((document) => document.candidateId === candidate.id).map((document) => ({ id: document.id, documentType: document.documentType, originalFilename: document.originalFilename, localPath: document.localPath, mimeType: document.mimeType, sha256: document.sha256, parseStatus: document.parseStatus, parsedAt: document.parsedAt, parseError: document.parseError, parsedData: (document.parsedData as ParsedCvData | null) ?? null, createdAt: document.createdAt })),
     applications: visibleApplications.filter((row) => row.application.candidateId === candidate.id).map(({ application, vacancy, requisition }) => ({
       id: application.id, stage: application.stage, humanDecision: application.humanDecision, vacancyId: vacancy.id, vacancyTitle: vacancy.title,
       companyId: requisition.companyId, siteId: requisition.siteId, createdAt: application.createdAt,
