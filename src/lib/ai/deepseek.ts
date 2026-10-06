@@ -31,6 +31,23 @@ export class DeepSeekProviderError extends Error {
   constructor(message: string) { super(message); }
 }
 
+function chatCompletionsUrl(value: string) {
+  const url = new URL(value);
+  const pathname = url.pathname.replace(/\/+$/, "");
+  if (pathname.endsWith("/chat/completions")) return url.toString();
+  url.pathname = `${pathname}/chat/completions`.replace(/^\/\/+/g, "/");
+  return url.toString();
+}
+
+async function providerError(response: Response) {
+  let detail = "";
+  try {
+    const body = await response.text();
+    detail = body.slice(0, 300).replace(/sk-[A-Za-z0-9_-]+/g, "[redacted]");
+  } catch { /* retain the status-only message */ }
+  return new DeepSeekProviderError(`DeepSeek request failed with status ${response.status}.${detail ? ` ${detail}` : ""}`);
+}
+
 export function matchingInputHash(context: MatchingContext) {
   return createHash("sha256").update(JSON.stringify({ promptVersion: MATCHING_PROMPT_VERSION, context })).digest("hex");
 }
@@ -47,7 +64,7 @@ export async function generateMatchingExplanation(context: MatchingContext): Pro
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30_000);
   try {
-    const response = await fetch(env.DEEPSEEK_API_URL, {
+    const response = await fetch(chatCompletionsUrl(env.DEEPSEEK_API_URL), {
       method: "POST", signal: controller.signal,
       headers: { "content-type": "application/json", authorization: `Bearer ${env.DEEPSEEK_API_KEY}` },
       body: JSON.stringify({ model: env.DEEPSEEK_MODEL, temperature: 0, response_format: { type: "json_object" }, messages: [
@@ -55,7 +72,7 @@ export async function generateMatchingExplanation(context: MatchingContext): Pro
         { role: "user", content: JSON.stringify(context) },
       ] }),
     });
-    if (!response.ok) throw new DeepSeekProviderError(`DeepSeek request failed with status ${response.status}.`);
+    if (!response.ok) throw await providerError(response);
     const payload = await response.json() as { choices?: Array<{ message?: { content?: unknown } }> };
     return { output: parseContent(payload.choices?.[0]?.message?.content), latencyMs: Date.now() - startedAt };
   } catch (error) {
@@ -72,8 +89,8 @@ async function generateStructured<T>(promptVersion: string, systemInstruction: s
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30_000);
   try {
-    const response = await fetch(env.DEEPSEEK_API_URL, { method: "POST", signal: controller.signal, headers: { "content-type": "application/json", authorization: `Bearer ${env.DEEPSEEK_API_KEY}` }, body: JSON.stringify({ model: env.DEEPSEEK_MODEL, temperature: 0, response_format: { type: "json_object" }, messages: [{ role: "system", content: `${systemInstruction} Prompt version: ${promptVersion}. Return JSON only and never make a hiring decision.` }, { role: "user", content: JSON.stringify(context) }] }) });
-    if (!response.ok) throw new DeepSeekProviderError(`DeepSeek request failed with status ${response.status}.`);
+    const response = await fetch(chatCompletionsUrl(env.DEEPSEEK_API_URL), { method: "POST", signal: controller.signal, headers: { "content-type": "application/json", authorization: `Bearer ${env.DEEPSEEK_API_KEY}` }, body: JSON.stringify({ model: env.DEEPSEEK_MODEL, temperature: 0, response_format: { type: "json_object" }, messages: [{ role: "system", content: `${systemInstruction} Prompt version: ${promptVersion}. Return JSON only and never make a hiring decision.` }, { role: "user", content: JSON.stringify(context) }] }) });
+    if (!response.ok) throw await providerError(response);
     const payload = await response.json() as { choices?: Array<{ message?: { content?: unknown } }> };
     const content = payload.choices?.[0]?.message?.content;
     if (typeof content !== "string") throw new DeepSeekProviderError("DeepSeek returned no interview content.");
