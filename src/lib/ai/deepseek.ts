@@ -52,10 +52,24 @@ export function matchingInputHash(context: MatchingContext) {
   return createHash("sha256").update(JSON.stringify({ promptVersion: MATCHING_PROMPT_VERSION, context })).digest("hex");
 }
 
+function extractJson(content: string) {
+  const cleaned = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start >= 0 && end > start) return cleaned.slice(start, end + 1);
+  return cleaned;
+}
+
 function parseContent(content: unknown) {
   if (typeof content !== "string") throw new DeepSeekProviderError("DeepSeek returned no matching content.");
-  const cleaned = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-  try { return matchingOutputSchema.parse(JSON.parse(cleaned)); } catch { throw new DeepSeekProviderError("DeepSeek returned invalid matching output."); }
+  let value: unknown;
+  try { value = JSON.parse(extractJson(content)); } catch { throw new DeepSeekProviderError("DeepSeek returned invalid matching output."); }
+  const parsed = matchingOutputSchema.safeParse(value);
+  if (!parsed.success) {
+    const fields = parsed.error.issues.slice(0, 4).map((issue) => issue.path.join(".") || "output").join(", ");
+    throw new DeepSeekProviderError(`DeepSeek returned invalid matching output. Check fields: ${fields}.`);
+  }
+  return parsed.data;
 }
 
 export async function generateMatchingExplanation(context: MatchingContext): Promise<{ output: MatchingOutput; latencyMs: number }> {
@@ -68,7 +82,7 @@ export async function generateMatchingExplanation(context: MatchingContext): Pro
       method: "POST", signal: controller.signal,
       headers: { "content-type": "application/json", authorization: `Bearer ${env.DEEPSEEK_API_KEY}` },
       body: JSON.stringify({ model: env.DEEPSEEK_MODEL, temperature: 0, response_format: { type: "json_object" }, messages: [
-        { role: "system", content: `You are a recruitment evidence assistant. Prompt version: ${MATCHING_PROMPT_VERSION}. Return JSON only using the requested schema. Score soft fit from 0 to 100. Never make a hiring decision, never use protected attributes, and do not invent evidence.` },
+        { role: "system", content: `You are a recruitment evidence assistant. Prompt version: ${MATCHING_PROMPT_VERSION}. Return one JSON object only with exactly these fields: score (integer 0-100), summary (string), strengths (array of strings), gaps (array of strings), evidence (array of objects with category, claim, evidence strings). Score soft fit from 0 to 100. Never make a hiring decision, never use protected attributes, and do not invent evidence.` },
         { role: "user", content: JSON.stringify(context) },
       ] }),
     });
@@ -94,7 +108,7 @@ async function generateStructured<T>(promptVersion: string, systemInstruction: s
     const payload = await response.json() as { choices?: Array<{ message?: { content?: unknown } }> };
     const content = payload.choices?.[0]?.message?.content;
     if (typeof content !== "string") throw new DeepSeekProviderError("DeepSeek returned no interview content.");
-    const cleaned = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+    const cleaned = extractJson(content);
     let parsed: T;
     try { parsed = parser.parse(JSON.parse(cleaned)); } catch { throw new DeepSeekProviderError("DeepSeek returned invalid interview output."); }
     return { output: parsed, latencyMs: Date.now() - startedAt };
